@@ -1,0 +1,36 @@
+Package: httpuv
+Type: Package
+Title: httpuv shim for webR
+Version: 1.6.6.9000
+Authors@R: c(
+    person("Joe", "Cheng", role = c("aut"), email = "joe@rstudio.com"),
+    person("Winston", "Chang", role = c("aut", "cre"), email = "winston@rstudio.com"),
+    person(family = "Posit Software, PBC", role = "cph"),
+    person("Hector", "Corrada Bravo", role = "ctb"),
+    person("Jeroen", "Ooms", role = "ctb"),
+    person("Andrzej", "Krzemienski", role = "cph", comment = "optional.hpp"),
+    person("George", "Stagg", role = "ctb", comment = "Package modification for webR shim")
+    )
+Copyright: RStudio, PBC; Joyent, Inc.; Nginx Inc.; Igor Sysoev; Niels Provos;
+    Internet Systems Consortium, Inc.; Alexander Chemeris; Berkeley Software
+    Design; Google Inc.; Sony Mobile Communications AB; Alexander Peslyak;
+    Free Software Foundation, Inc.; X Consortium; Ben Noordhuis;
+    StrongLoop, Inc.; Saúl Ibarra Corretgé; Bert Belder; Fedor Indutny;
+    libuv project; Refael Ackermann; Kenneth MacKay; Emergya; Diego Pettenò;
+    xine project, The Regents of the University of California,
+    Dariusz Dwornikowski
+Description: A shim for the httpuv package for webR. A real web server is not
+    created, instead the relevant callbacks are made available for use by webR
+    and a service worker.
+License: GPL (>= 2) | file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.2
+Imports:
+    Rcpp (>= 1.0.7),
+    utils,
+    R6,
+    promises,
+    later (>= 0.8.0),
+    webr
+LinkingTo: Rcpp, later
