@@ -270,15 +270,23 @@ WebServer <- R6Class("WebServer",
 # TODO: Ignore or re-queue stdin messages so that they are handled properly
 #       when Shiny is no longer blocking and control is returned to the REPL.
 #' @export
-#' @importFrom later run_now
+#' @importFrom later run_now later
 #' @importFrom webr eval_js
-service <- function(timeoutMs = 0) {
-  run_now()
-  eval_js("
-    let msg = chan.read();
-    while (msg.type === 'stdin') msg = chan.read();
-    dispatch(msg);
-  ")
+service <- function(timeoutMs = ifelse(interactive(), 100, 1000)) {
+  # Deal with all messages currently waiting in the webR communication channel
+  # queue. We use later() as a signal to timeout blocking on chan.read().
+  done <- FALSE
+  later(function() { done <<- TRUE }, timeoutMs / 1000)
+  while (!done) {
+    eval_js("
+      let msg = chan.read();
+      while (msg.type === 'stdin') msg = chan.read();
+      dispatch(msg);
+    ")
+    run_now()
+  }
+
+  # Some code expects service() to return TRUE (#123)
   TRUE
 }
 

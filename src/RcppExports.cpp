@@ -86,8 +86,8 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP writeHttpuvTcpResponse(SEXP, SEXP);
-RcppExport SEXP writeHttpuvWSResponse(SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP writeHttpuvTcpResponse(void *, void *);
+RcppExport SEXP writeHttpuvWSResponse(void *, void *, void *, void *);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_httpuv_base64encode", (DL_FUNC) &_httpuv_base64encode, 1},
