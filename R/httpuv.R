@@ -102,6 +102,17 @@ AppWrapper <- R6Class(
       writeBin(bytes, req$.bodyData)
     },
     call = function(req) {
+      get_file_response <- function(path) {
+        woff <- c(woff2 = "application/font-woff2")
+        list(
+          status = 200L,
+          headers = list(
+            "Content-Type" = mime::guess_type(path, mime_extra = woff)
+          ),
+          body = readBin(path, "raw", n = file.info(path)$size, size = 1L)
+        )
+      }
+
       resp <- if (is.null(private$app$call)) {
         list(
           status = 404L,
@@ -121,14 +132,7 @@ AppWrapper <- R6Class(
               path <- path + "index.html"
             }
             if (file.exists(path)) {
-              woff <- c(woff2 = "application/font-woff2")
-              file_resp <- list(
-                status = 200L,
-                headers = list(
-                  "Content-Type" = mime::guess_type(path, mime_extra = woff)
-                ),
-                body = readBin(path, "raw", n = file.info(path)$size, size = 1L)
-              )
+              file_resp <- get_file_response
               break
             }
             if (!value$options$fallthrough) {
@@ -149,25 +153,30 @@ AppWrapper <- R6Class(
           file_resp
         }
       }
-      
+
       clean_up <- function() {
         if (!is.null(req$.bodyData)) {
           close(req$.bodyData)
         }
         req$.bodyData <- NULL
       }
-      
+
+      if ('file' %in% names(resp$body)) {
+        path <- resp$body[['file']]
+        resp <- get_file_response(path)
+      }
+
       if (is.promise(resp)) {
         # Slower path if resp is a promise
         resp <- resp %...>% .Call("writeHttpuvTcpResponse", req, .)
         finally(resp, clean_up)
-        
+
       } else {
         # Fast path if resp is a regular value
         on.exit(clean_up())
         .Call("writeHttpuvTcpResponse", req, resp)
       }
-      
+
       invisible()
     },
     onWSOpen = function(handle, req) {
