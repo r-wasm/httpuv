@@ -192,7 +192,7 @@ AppWrapper <- R6Class(
     onWSClose = function(handle) {
       ws <- private$wsconns[[wsconn_address(handle)]]
       ws$handle <- NULL
-      rm(list = handle, envir = private$wsconns)
+      rm(list = wsconn_address(handle), envir = private$wsconns)
       
       for (handler in ws$closeCallbacks) {
         handler()
@@ -214,6 +214,7 @@ Server <- R6Class("Server",
 
       options(webr_httpuv_onWSMessage = NULL)
       options(webr_httpuv_onWSOpen = NULL)
+      options(webr_httpuv_onWSClose = NULL)
       options(webr_httpuv_onRequest = NULL)
 
       private$running <- FALSE
@@ -247,6 +248,7 @@ WebServer <- R6Class("WebServer",
       private$handle <- 1
       options(webr_httpuv_onWSMessage = private$appWrapper$onWSMessage)
       options(webr_httpuv_onWSOpen = private$appWrapper$onWSOpen)
+      options(webr_httpuv_onWSClose = private$appWrapper$onWSClose)
       options(webr_httpuv_onRequest = private$appWrapper$call)
       private$running <- TRUE
     },
