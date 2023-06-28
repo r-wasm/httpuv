@@ -284,6 +284,12 @@ WebServer <- R6Class("WebServer",
 #' @importFrom later run_now later
 #' @importFrom webr eval_js
 service <- function(timeoutMs = ifelse(interactive(), 100, 1000)) {
+  # Rate-limit the timeout to avoid overloafing the browser with XHR sync
+  # requests when running under the webR ServiceWorker channel.
+  if (eval_js("chan instanceof ServiceWorkerChannelWorker")) {
+    timeoutMs = 1000
+  }
+
   # Deal with all messages currently waiting in the webR communication channel
   # queue. We use later() as a signal to timeout blocking on chan.read().
   done <- FALSE
