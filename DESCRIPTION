@@ -33,4 +33,5 @@ Imports:
     promises,
     later (>= 0.8.0),
     webr
+Remotes: webr=github::r-wasm/webr/packages/webr
 LinkingTo: Rcpp, later
